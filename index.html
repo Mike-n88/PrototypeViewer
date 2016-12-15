@@ -1,0 +1,89 @@
+<html>
+
+<head>
+    <title>Prototype viewer</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container" style="padding-top:20px;">
+        <div class="row">
+            <form id="loadLayer">
+                <div class="col-md-2">
+                    <label for="serviceURL">Databron (service)</label>
+                </div>
+                <div class="col-md-7">
+                    <input type="text" style="right:0px; width:100%;" name="serviceURL" id="serviceURL" value="">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="buttonConnect">Koppel</button>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="container" style="padding-top:20px;">
+        <div class="row">
+            <div class="col-md-9">
+                <div id="map" class="map" style="min-height:450px;background-color:#4b7ac6; height:55%;position:inherit;"></div>
+                <script src="../dist/dist/ol-debug.js"></script>
+                <script src="../dist/app.js"></script>
+                <div id="info" style="width:100%; background-color:#b1d8ad;">
+                    <h3>Achtergrond informatie</h3>
+                    <br />
+                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque
+                        eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium.
+                        Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.
+                        Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div id="menu" style="padding-left:5px; background-color:#b1d8ad;">
+                    <h1 style="padding:5px; margin:0px; text-align:center;">Menu</h1>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12" style="padding-left:7%;">
+                            <form>
+                                <select style="width:75%" id="setLayer" name="setLayer" multiple="multiple">
+                                  <!-- <option value="">Kies kaartlaag</option> -->
+                                </select>
+                                <br />
+                                <button type="button" id="buttonLayers">Start</button>
+                            </form>
+
+                            <h3 style="padding-top:10px;">Features</h3>
+
+                            <form>
+                                <label for="numberLayer">Selecteer laag:</label><br />
+                                <select name="layerSelect" id="layerSelect">
+                                </select>
+                                <label for="addFeature"><input type="radio" id="addFeature" value="add"> Feature toevoegen</label><br />
+                                <label for="selectFeature"><input type="radio" id="selectFeature" value="select"> Feature selecteren</label><br />
+                                <label for="changeFeature"><input type="radio" id="changeFeature" value="change"> Feature bewerken</label><br />
+                                <label for="deleteFeature"><input type="radio" id="deleteFeature" value="delete"> Feature verwijderen</label><br />
+                                <br />
+                                <br />
+                                <br />
+                                <br />
+                                <button type="button" id="buttonSearch">Zoeken</button>
+                                <button type="button" id="buttonFilters">Filters</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" style=" padding-top:20px;">
+        <div class="row">
+            <div class="col-md-9">
+
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
