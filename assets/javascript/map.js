@@ -1,11 +1,17 @@
 var $ = require('jQuery');
 var ol = require('openlayers');
 
+import {createMapserverLayer} from './mapservice.js';
+import {createFeatureLayer} from './featureservice.js';
+
 var dataSource;
 var capabilities;
 var legend;
+var layers;
 var map = ol.map;
-var layersArray = [];
+
+var mapserverLayersArray = [];
+var featureserverLayersArray = [];
 
 //create a basic map
 export function createMap() {
@@ -62,13 +68,14 @@ function getLegend(url) {
 }
 
 function fillMenu() {
+
     getLayersFromDataSource("#setLayer");
     getLayersFromDataSource("#layerSelect");
     addLayersToMap();
 }
 
 function getLayersFromDataSource(divId) {
-    var layers = capabilities.layers;
+    layers = capabilities.layers;
     //remove old options
     $(divId)
         .find('option').remove()
@@ -83,32 +90,30 @@ function getLayersFromDataSource(divId) {
 }
 
 function addLayersToMap(){
-  var layers = capabilities.layers;
-  for (var i = 0; i < layers.length; i++) {
-      var aid = layers[i].id;
-      layersArray[i] = createLayer(aid);
-      map.addLayer(layersArray[i]);
-      layersArray[i].setVisible(false);
-  };
+  if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
+    for (var i = 0; i < layers.length; i++) {
+        var aid = layers[i].id;
+        mapserverLayersArray[i] = createLayer(aid);
+        map.addLayer(mapserverLayersArray[i]);
+        mapserverLayersArray[i].setVisible(false);
+    };
+  } else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
+    for (var i = 0; i < layers.length; i++) {
+        var aid = layers[i].id;
+        mapserverLayersArray[i] = createFeatureLayer(dataSource,aid);
+        map.addLayer(mapserverLayersArray[i]);
+        mapserverLayersArray[i].setVisible(false);
+      }
+  }
 }
 
 function createLayer(layerId) {
     if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
-        var url = dataSource;
-        var imageLayer =
-            new ol.layer.Image({
-                source: new ol.source.ImageArcGISRest({
-                    ratio: 1.5,
-                    params: {
-                        'layers': 'show:'+layerId
-                    },
-                    url: url
-                })
-            });
-        return imageLayer;
+        return createMapserverLayer(layerId, dataSource);
     } else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
-      
+        //First we need to create a layer, then we add the features and the information on that layer
         console.log("System found out it is a Featureserver.")
+
     } else {
         console.log("System doesn't know what type it is :( ")
     }
@@ -116,9 +121,53 @@ function createLayer(layerId) {
 
 //Show selected layer
 export function showLayer(layerId) {
-  layersArray[layerId].setVisible(true);
+
+  mapserverLayersArray[layerId].setVisible(true);
 }
 //Hide unselected layer
 export function hideLayer(layerId) {
-  layersArray[layerId].setVisible(false);
+
+  mapserverLayersArray[layerId].setVisible(false);
+
 }
+
+
+// function createFeatureLayer(serviceUrl, layer) {
+//     var vectorSource = new ol.source.Vector({
+//         loader: function(extent, resolution, projection) {
+//             var url = serviceUrl + '/' + layer + '/query/?f=json&' +
+//                 'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
+//                 encodeURIComponent('{"xmin":' + extent[0] + ',"ymin":' +
+//                     extent[1] + ',"xmax":' + extent[2] + ',"ymax":' + extent[3] +
+//                     ',"spatialReference":{"wkid":102100}}') +
+//                 '&geometryType=esriGeometryEnvelope&inSR=102100&outFields=*' +
+//                 '&outSR=102100';
+//             $.ajax({
+//                 url: url,
+//                 dataType: 'jsonp',
+//                 success: function(response) {
+//                     if (response.error) {
+//                         alert(response.error.message + '\n' +
+//                             response.error.details.join('\n'));
+//                     } else {
+//                         // dataProjection will be read from document
+//                         var features = esrijsonFormat.readFeatures(response, {
+//                             featureProjection: projection
+//                         });
+//                         if (features.length > 0) {
+//                             vectorSource.addFeatures(features);
+//                         }
+//                     }
+//                 }
+//             });
+//         },
+//         strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
+//             tileSize: 512
+//         }))
+//     });
+//
+//     var vector = new ol.layer.Vector({
+//         source: vectorSource
+//     });
+//     return vector;
+// }
