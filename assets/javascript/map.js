@@ -1,8 +1,13 @@
 var $ = require('jQuery');
 var ol = require('openlayers');
 
-import {createMapserverLayer} from './mapservice.js';
-import {createFeatureLayer} from './featureservice.js';
+import {
+    createMapserverLayer
+} from './mapservice.js';
+import {
+    createFeatureLayer
+} from './featureservice.js';
+
 
 var dataSource;
 var capabilities;
@@ -27,6 +32,8 @@ export function createMap() {
             zoom: 10
         })
     });
+    //map.on('pointermove', onMouseMove);
+    map.on('click', onMouseClick);
 }
 //Get data from the serviceURL as JSON format
 //After collecting the data start fillMenu() with the collected data
@@ -89,22 +96,22 @@ function getLayersFromDataSource(divId) {
     };
 }
 
-function addLayersToMap(){
-  if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
-    for (var i = 0; i < layers.length; i++) {
-        var aid = layers[i].id;
-        mapserverLayersArray[i] = createLayer(aid);
-        map.addLayer(mapserverLayersArray[i]);
-        mapserverLayersArray[i].setVisible(false);
-    };
-  } else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
-    for (var i = 0; i < layers.length; i++) {
-        var aid = layers[i].id;
-        mapserverLayersArray[i] = createFeatureLayer(dataSource,aid);
-        map.addLayer(mapserverLayersArray[i]);
-        mapserverLayersArray[i].setVisible(false);
-      }
-  }
+function addLayersToMap() {
+    if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
+        for (var i = 0; i < layers.length; i++) {
+            var aid = layers[i].id;
+            mapserverLayersArray[i] = createLayer(aid);
+            map.addLayer(mapserverLayersArray[i]);
+            mapserverLayersArray[i].setVisible(false);
+        };
+    } else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
+        for (var i = 0; i < layers.length; i++) {
+            var aid = layers[i].id;
+            mapserverLayersArray[i] = createFeatureLayer(dataSource, aid);
+            map.addLayer(mapserverLayersArray[i]);
+            mapserverLayersArray[i].setVisible(false);
+        }
+    }
 }
 
 function createLayer(layerId) {
@@ -122,11 +129,51 @@ function createLayer(layerId) {
 //Show selected layer
 export function showLayer(layerId) {
 
-  mapserverLayersArray[layerId].setVisible(true);
+    mapserverLayersArray[layerId].setVisible(true);
 }
 //Hide unselected layer
 export function hideLayer(layerId) {
 
-  mapserverLayersArray[layerId].setVisible(false);
+    mapserverLayersArray[layerId].setVisible(false);
 
+}
+
+// when the user moves the mouse, get the name property
+// from each feature under the mouse and display it
+function onMouseMove(browserEvent) {
+    var coordinate = browserEvent.coordinate;
+    var pixel = map.getPixelFromCoordinate(coordinate);
+    if (document.getElementById('info-feature')) {
+        var el = document.getElementById('info-feature');
+    }
+    el.innerHTML = '';
+    map.forEachFeatureAtPixel(pixel, function(feature) {
+        el.innerHTML += feature.get('name') + '<br>';
+    });
+}
+
+// when the user moves the mouse, get the name property
+// from each feature under the mouse and display it
+function onMouseClick(browserEvent) {
+    var coordinate = browserEvent.coordinate;
+    var pixel = map.getPixelFromCoordinate(coordinate);
+    if (document.getElementById('info-feature')) {
+        var el = document.getElementById('info-feature');
+    }
+    el.innerHTML = '';
+    map.forEachFeatureAtPixel(pixel, function(feature) {
+        $("#info-feature").append('<form method="POST">');
+        $("#info-feature form").append('<br><input type="submit" id="savebutton" value="Save" /><br />');
+
+        var str = feature.getProperties();
+        for (var s in str) {
+            if (typeof str[s] === 'object') {
+
+            } else {
+                $('#info-feature form').append('<label for="'+s+'">'+s+': </label>');
+                $("#info-feature form").append('<input type="text" placeholder="test" name="'+s+'" value="'+str[s]+'" /><br />');
+
+            }
+        }
+    });
 }

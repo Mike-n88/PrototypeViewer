@@ -1,6 +1,7 @@
 var $ = require('jQuery');
 
 var esrijsonFormat = new ol.format.EsriJSON();
+var vector;
 
 export function createFeatureLayer(serviceUrl, layer) {
     var vectorSource = new ol.source.Vector({
