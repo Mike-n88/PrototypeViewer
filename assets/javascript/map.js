@@ -8,6 +8,7 @@ import {
     createFeatureLayer
 } from './featureservice.js';
 
+import {changeFeature} from './featureservice.js';
 
 var dataSource;
 var capabilities;
@@ -162,8 +163,12 @@ function onMouseClick(browserEvent) {
     }
     el.innerHTML = '';
     map.forEachFeatureAtPixel(pixel, function(feature) {
-        $("#info-feature").append('<form method="POST">');
-        $("#info-feature form").append('<br><input type="submit" id="savebutton" value="Save" /><br />');
+        $("#info-feature").append('<form>');
+        $("#info-feature form").append('<br><button type="button" id="saveButton">Save</button><br />');
+
+        document.getElementById('saveButton').addEventListener('click', function(){
+          changeFeature(feature);
+         });
 
         var str = feature.getProperties();
         for (var s in str) {
@@ -171,7 +176,7 @@ function onMouseClick(browserEvent) {
 
             } else {
                 $('#info-feature form').append('<label for="'+s+'">'+s+': </label>');
-                $("#info-feature form").append('<input type="text" placeholder="test" name="'+s+'" value="'+str[s]+'" /><br />');
+                $("#info-feature form").append('<input type="text" id="'+s+'1" name="'+s+'" value="'+str[s]+'" /><br />');
 
             }
         }

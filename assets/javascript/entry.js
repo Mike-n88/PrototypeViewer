@@ -5,6 +5,7 @@ import {showLayer} from './map.js';
 import {hideLayer} from './map.js';
 import {onMouseMove} from './featureservice.js';
 
+
 createMap();
 
 window.onload = function() {
@@ -24,5 +25,5 @@ window.onload = function() {
           }
         });
     });
-    
+
 }

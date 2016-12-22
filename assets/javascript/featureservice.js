@@ -42,3 +42,48 @@ export function createFeatureLayer(serviceUrl, layer) {
     });
     return vector;
 }
+
+export function changeFeature(feature) {
+    var str = {};
+    str = feature.getProperties();
+
+    for (var s in str) {
+        if (typeof str[s] === 'object' ||str[s]=== 'geometry') {
+
+        } else {
+            str[s] = document.getElementById(''+s + '1').value;
+            feature[s] = document.getElementById(''+s + '1').value;
+        }
+    };
+
+    console.log(str);
+    console.log(feature);
+
+    $.ajax({
+        type: "POST",
+        url: "http://192.168.216.56:6080/arcgis/rest/services/test/MyMapService/FeatureServer/0/applyEdits",
+        data: str,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        processData: true,
+        success: function (data, status, jqXHR) {
+            alert("success..." + data);
+        },
+        error: function (xhr) {
+            alert(xhr.responseText);
+        }
+    });
+}
+
+
+//     $.ajax({
+//       type: "POST",
+//       url: "http://192.168.216.56:6080/arcgis/rest/services/test/MyMapService/FeatureServer/0/applyEdits",
+//       data: str,
+//       dataType: "JSON",
+//       success: function() {
+//         alert("Thanks");
+//       }
+//   });
+//
+//}
