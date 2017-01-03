@@ -47,6 +47,10 @@ export function getDataSource(url) {
     fillMenu();
 }
 
+export function getUrl(){
+  return dataSource;
+}
+
 //Fill the javascript variable @capabilities with JSON
 function getCapabilities(url) {
     var capabilitiesURL = url + "?f=pjson";
@@ -76,18 +80,25 @@ function getLegend(url) {
 }
 
 function fillMenu() {
-
     getLayersFromDataSource("#setLayer");
     getLayersFromDataSource("#layerSelect");
+    getLayersFromDataSource("#filterLayerSelect");
     addLayersToMap();
 }
 
 function getLayersFromDataSource(divId) {
     layers = capabilities.layers;
     //remove old options
+    if(divId=="#filterLayerSelect"){
+      $(divId)
+          .find('option:gt(0)').remove()
+          .end();
+    }
+    else if(divId!="#filterLayerSelect"){
     $(divId)
         .find('option').remove()
         .end();
+    }
     //iterate through all layers and add them to the select list where value is id and name is name
     for (var i = 0; i < layers.length; i++) {
         var aname = layers[i].name;
@@ -95,13 +106,14 @@ function getLayersFromDataSource(divId) {
         //setLayer.append($('<option />').val(aid));
         $(divId).append('<option value="' + aid + '">' + aname + '</option>');
     };
+
 }
 
 function addLayersToMap() {
     if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
         for (var i = 0; i < layers.length; i++) {
             var aid = layers[i].id;
-            mapserverLayersArray[i] = createLayer(aid);
+            mapserverLayersArray[i] = createMapserverLayer(dataSource, aid);
             map.addLayer(mapserverLayersArray[i]);
             mapserverLayersArray[i].setVisible(false);
         };
@@ -136,7 +148,6 @@ export function showLayer(layerId) {
 export function hideLayer(layerId) {
 
     mapserverLayersArray[layerId].setVisible(false);
-
 }
 
 // when the user moves the mouse, get the name property

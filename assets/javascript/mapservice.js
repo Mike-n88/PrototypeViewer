@@ -1,5 +1,5 @@
 //Create layer for mapservice(wms)
-export function createMapserverLayer (layerId, dataSource){
+export function createMapserverLayer (dataSource, layerId){
   var url = dataSource;
   var imageLayer =
       new ol.layer.Image({

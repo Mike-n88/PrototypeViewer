@@ -45,7 +45,6 @@ gulp.task('es2015', function() {
     .pipe(connect.reload());
 });
 
-
 gulp.task('watch',['connect'], function() {
   //livereload.listen();
   gulp.watch('./assets/javascript/*.js', ['es2015']);

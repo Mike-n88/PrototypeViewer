@@ -1,13 +1,32 @@
 <html>
 
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=iso-8859-15">
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-15">
     <title>Prototype viewer</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
+    <div id="popUpFilter" style="z-index:1; position:absolute; left:0; right:0; bottom:0; top:0; width:50%; height:50%; margin:auto; display:none; background-color:#4b7ac6;">
+        <h3>Filters</h3>
+        <form>
+            <label for="numberLayer">Selecteer laag:</label><br />
+            <select name="filterLayerSelect" id="filterLayerSelect">
+              <option value="">Kies Laag</option>
+            </select> <br />
+            <select name="featureName1" id="featureNameSelect">
+            </select>
+            <select name="operatorName1" id="operatorSelect1">
+              <option value=">"> > </option>
+              <option value="<"> < </option>
+
+            </select>
+            <select name="checkWaarde1" id="checkWaarde1">
+            </select>
+            <input type="submit">
+        </form>
+    </div>
     <div class="container" style="padding-top:20px;">
         <div class="row">
             <form id="loadLayer">
@@ -67,7 +86,7 @@
                                 <br />
                                 <br />
                                 <br />
-                                <button type="button" id="buttonSearch">Zoeken</button>
+                                <button type="button" value='hide/show' id="buttonSearch">Zoeken</button>
                                 <button type="button" id="buttonFilters">Filters</button>
                             </form>
                         </div>
