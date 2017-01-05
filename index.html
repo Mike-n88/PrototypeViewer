@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <div id="popUpFilter" style="z-index:1; position:absolute; left:0; right:0; bottom:0; top:0; width:50%; height:50%; margin:auto; display:none; background-color:#4b7ac6;">
+    <div id="popUpFilter" style="z-index:1; position:absolute; left:0; right:0; bottom:0; top:0; width:40%; height:50%; margin:auto; display:none; background-color:#4b7ac6;">
         <h3>Filters</h3>
         <form>
             <label for="numberLayer">Selecteer laag:</label><br />
@@ -22,9 +22,17 @@
               <option value="<"> < </option>
 
             </select>
-            <select name="checkWaarde1" id="checkWaarde1">
-            </select>
+            <input type="text" name="checkWaarde1" id="checkWaarde1" value="">
+            <button type="button" id="buttonFilterApply">Filters toevoegen</button>
+        </form>
+
+    </div>
+    <div id="popUpSearch" style="z-index:1; position:absolute; left:0; right:0; bottom:0; top:0; width:40%; height:50%; margin:auto; display:none; background-color:#4b7ac6;">
+        <h3>Zoeken</h3>
+        <form>
+
             <input type="submit">
+
         </form>
     </div>
     <div class="container" style="padding-top:20px;">

@@ -5,6 +5,6 @@ export function showWindow(name){
     $('#popUpFilter').toggle('slow');
   }
   else if(name == "search"){
-
+    $('#popUpSearch').toggle('slow');
   }
 }

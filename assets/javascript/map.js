@@ -51,6 +51,15 @@ export function getUrl(){
   return dataSource;
 }
 
+export function getMLayersA(){
+  return mapserverLayersArray;
+}
+
+export function getFLayersA(){
+  return featureserverLayersArray;
+}
+
+
 //Fill the javascript variable @capabilities with JSON
 function getCapabilities(url) {
     var capabilitiesURL = url + "?f=pjson";
@@ -107,6 +116,10 @@ function getLayersFromDataSource(divId) {
         $(divId).append('<option value="' + aid + '">' + aname + '</option>');
     };
 
+}
+
+export function addSingleLayerToMap(layer){
+  map.addLayer(layer);
 }
 
 function addLayersToMap() {

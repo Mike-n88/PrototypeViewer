@@ -87,5 +87,3 @@ export function changeFeature(feature) {
 //   });
 //
 //}
-
-//@function Get's the featurename from the selected layer
