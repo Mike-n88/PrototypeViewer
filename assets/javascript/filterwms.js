@@ -11,17 +11,16 @@ import {
 // import {createMapserverLayer} from './mapservice.js';
 // import {createFeatureLayer} from './featureservice.js';
 
-export function filter(layerId, featureName1, operatorName1, checkWaarde1) {
+export function filterWMS(layerId, featureName1, operatorName1, checkWaarde1) {
 
   //var url = getUrl();
   //var featureLayersArray = getFLayersA();
   var mapLayersArray = getMLayersA();
-  var imageSource = mapLayersArray[0].getSource();
+  var imageSource = mapLayersArray[layerId].getSource();
 
-  var layerDefString = layerDefFilter(featureName1, checkWaarde1, layerId);
+  var layerDefString = layerDefFilter(featureName1, checkWaarde1, layerId, operatorName1);
 
   imageSource.updateParams({
-      //'layers': 'show:'+layerId,
     'layerDefs': layerDefString
   });
 
@@ -40,8 +39,8 @@ export function filter(layerId, featureName1, operatorName1, checkWaarde1) {
 
 }
 
-function layerDefFilter(featureName1,checkWaarde1,layerId) {
+function layerDefFilter(featureName1,checkWaarde1,layerId,operatorName1) {
 
-  var s = '{' + layerId + ':"' + featureName1 + '=\'' + checkWaarde1 + '\'"}';
+  var s = '{' + layerId + ':"' + featureName1 + operatorName1 + '\'' + checkWaarde1 + '\'"}';
   return s;
 }

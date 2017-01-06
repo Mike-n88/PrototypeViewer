@@ -5,7 +5,8 @@ import {showLayer} from './map.js';
 import {hideLayer} from './map.js';
 import {showWindow} from './window.js';
 import {getFeatureName} from './formValues.js';
-import {filter} from './filter.js';
+import {filterWMS} from './filterwms.js';
+import {filterWFS} from './filterwfs.js';
 
 //Create the openlayers map with OSM as background
 createMap();
@@ -47,7 +48,11 @@ window.onload = function() {
 
     //Eventlistener going off clicking "Filters" button, will show filters window
   document.getElementById('buttonFilterApply').addEventListener('click', function() {
-    filter(document.getElementById('filterLayerSelect').value,document.getElementById('featureNameSelect').value,document.getElementById('operatorSelect1').value,document.getElementById('checkWaarde1').value);
+    if (document.getElementById('serviceURL').value.toLowerCase().indexOf('mapserver') >= 0) {
+      filterWMS(document.getElementById('filterLayerSelect').value,document.getElementById('featureNameSelect').value,document.getElementById('operatorSelect1').value,document.getElementById('checkWaarde1').value);
+    }    else if (document.getElementById('serviceURL').value.toLowerCase().indexOf('featureserver') >= 0) {
+      filterWFS(document.getElementById('filterLayerSelect').value,document.getElementById('featureNameSelect').value,document.getElementById('operatorSelect1').value,document.getElementById('checkWaarde1').value);
+    }
   });
 
     //Eventlistener going off clicking "Zoeken" button, will show Zoeken window

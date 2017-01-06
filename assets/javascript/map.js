@@ -129,9 +129,9 @@ function addLayersToMap() {
       map.addLayer(mapserverLayersArray[i]);
       mapserverLayersArray[i].setVisible(false);
     }      else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
-      mapserverLayersArray[i] = createFeatureLayer(dataSource, aid);
-      map.addLayer(mapserverLayersArray[i]);
-      mapserverLayersArray[i].setVisible(false);
+      featureserverLayersArray[i] = createFeatureLayer(dataSource, aid);
+      map.addLayer(featureserverLayersArray[i]);
+      featureserverLayersArray[i].setVisible(false);
     }
   }
 }
@@ -139,13 +139,19 @@ function addLayersToMap() {
 
 //Show selected layer
 export function showLayer(layerId) {
-
-  mapserverLayersArray[layerId].setVisible(true);
+  if (mapserverLayersArray.length > 0) {
+    mapserverLayersArray[layerId].setVisible(true);
+  } else if (featureserverLayersArray.length > 0) {
+    featureserverLayersArray[layerId].setVisible(true);
+  }
 }
 //Hide unselected layer
 export function hideLayer(layerId) {
-
-  mapserverLayersArray[layerId].setVisible(false);
+  if (mapserverLayersArray.length > 0) {
+    mapserverLayersArray[layerId].setVisible(false);
+  }  else if (featureserverLayersArray.length > 0) {
+    featureserverLayersArray[layerId].setVisible(false);
+  }
 }
 
 // when the user moves the mouse, get the name property
