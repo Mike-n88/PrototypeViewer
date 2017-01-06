@@ -7,7 +7,6 @@ export function createMapserverLayer (dataSource, layerId){
               ratio: 1.5,
               params: {
                   'layers': 'show:'+layerId
-
               },
               url: url
           })

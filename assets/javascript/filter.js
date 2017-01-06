@@ -1,36 +1,29 @@
-import {
-    getUrl
-} from './map.js';
-import {
-    getFLayersA
-} from './map.js';
+// import {
+//     getUrl
+// } from './map.js';
+// import {
+//     getFLayersA
+// } from './map.js';
 import {
     getMLayersA
 } from './map.js';
-import {
-    setFLayersA
-} from './map.js';
-import {
-    setMLayersA
-} from './map.js';
-import {
-    addSingleLayerToMap
-} from './map.js';
+
 // import {createMapserverLayer} from './mapservice.js';
 // import {createFeatureLayer} from './featureservice.js';
 
 export function filter(layerId, featureName1, operatorName1, checkWaarde1) {
 
-    var url = getUrl();
-    var featureLayersArray = getFLayersA();
-    var mapLayersArray = getMLayersA();
-    var imageSource = mapLayersArray[0].getSource();
+  //var url = getUrl();
+  //var featureLayersArray = getFLayersA();
+  var mapLayersArray = getMLayersA();
+  var imageSource = mapLayersArray[0].getSource();
 
-    var layerDefString = layerDefFilter(featureName1, checkWaarde1, layerId);
+  var layerDefString = layerDefFilter(featureName1, checkWaarde1, layerId);
 
-    imageSource.updateParams({
-        'layerDefs': layerDefString
-    });
+  imageSource.updateParams({
+      //'layers': 'show:'+layerId,
+    'layerDefs': layerDefString
+  });
 
     //// featureservice filter
     // var vectorSource = mapLayersArray[0].getSource();
@@ -48,6 +41,7 @@ export function filter(layerId, featureName1, operatorName1, checkWaarde1) {
 }
 
 function layerDefFilter(featureName1,checkWaarde1,layerId) {
-  var s = '{"show:'+layerId+'": "'+featureName1+'=\''+checkWaarde1+'\'"}';
+
+  var s = '{' + layerId + ':"' + featureName1 + '=\'' + checkWaarde1 + '\'"}';
   return s;
 }

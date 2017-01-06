@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-    connect = require('gulp-connect');
+var connect = require('gulp-connect');
 var browserify = require('browserify');
 var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
