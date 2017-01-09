@@ -1,6 +1,10 @@
 var $ = require('jQuery');
 var ol = require('openlayers');
 
+import {
+    getMap
+} from './map.js';
+
 var esrijsonFormat = new ol.format.EsriJSON();
 
 export function createFeatureLayer(serviceUrl, layer) {
@@ -82,3 +86,31 @@ export function changeFeature(feature) {
 //   });
 //
 //}
+
+//Onclick behavior
+export function onClickWFS(browserEvent){
+  var map = getMap();
+  var coordinate = browserEvent.coordinate;
+  var pixel = map.getPixelFromCoordinate(coordinate);
+  var el;
+  if (document.getElementById('info-feature')) {
+    el = document.getElementById('info-feature');
+  }
+  el.innerHTML = '';
+  map.forEachFeatureAtPixel(pixel, function(feature) {
+    $('#info-feature').append('<form>');
+    $('#info-feature form').append('<br><button type="button" id="saveButton">Save</button><br />');
+
+    document.getElementById('saveButton').addEventListener('click', function() {
+      changeFeature(feature);
+    });
+
+    var str = feature.getProperties();
+    for (var s in str) {
+      if (typeof str[s] != 'object') {
+        $('#info-feature form').append('<label for="' + s + '">' + s + ': </label>');
+        $('#info-feature form').append('<input type="text" id="' + s + '1" name="' + s + '" value="' + str[s] + '" /><br />');
+      }
+    }
+  });
+}
