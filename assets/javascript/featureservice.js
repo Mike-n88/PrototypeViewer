@@ -3,7 +3,7 @@ var ol = require('openlayers');
 var proj4 = require('proj4');
 
 proj4.defs('EPSG:28992', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.4171,50.3319,465.5524,-0.398957388243134,0.343987817378283,-1.87740163998045,4.0725 +units=m +no_defs');
-
+ol.proj.setProj4(proj4);
 import {
     getMap
 } from './map.js';
@@ -12,7 +12,9 @@ import {
 } from './map.js';
 
 var esrijsonFormat = new ol.format.EsriJSON();
-
+var projection = new ol.proj.Projection({
+  code: 'EPSG:28992'
+});
 export function createFeatureLayer(dataSource, layer) {
   var vectorSource = new ol.source.Vector({
     loader: function(extent, resolution, projection) {
@@ -20,8 +22,8 @@ export function createFeatureLayer(dataSource, layer) {
                 'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
                 encodeURIComponent('{"xmin":' + extent[0] + ',"ymin":' +
                     extent[1] + ',"xmax":' + extent[2] + ',"ymax":' + extent[3] +
-                    ',"spatialReference":{"wkid":28992}}') +
-                '&geometryType=esriGeometryEnvelope&inSR=28992&outFields=*' +
+                    ',"spatialReference":{"wkid":3857}}') +
+                '&geometryType=esriGeometryEnvelope&inSR=3857&outFields=*' +
                 '&outSR=28992';
       $.ajax({
         url: url,
@@ -31,7 +33,7 @@ export function createFeatureLayer(dataSource, layer) {
             alert(response.error.message + '\n' +
                             response.error.details.join('\n'));
           } else {
-                        // dataProjection will be read from document
+            // dataProjection will be read from document
             var features = esrijsonFormat.readFeatures(response, {
               featureProjection: projection
             });
@@ -42,6 +44,10 @@ export function createFeatureLayer(dataSource, layer) {
         }
       });
     },
+    //Projection handling for vector (has no projection: option)
+    format: new ol.format.GeoJSON({
+      defaultDataProjection:projection
+    }),
     strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
       tileSize: 512
     }))
@@ -51,6 +57,7 @@ export function createFeatureLayer(dataSource, layer) {
     source: vectorSource
   });
   return vector;
+
 }
 
 export function changeFeatureInfo(feature) {
@@ -60,7 +67,8 @@ export function changeFeatureInfo(feature) {
   var url = dataSource + '/0/updateFeatures';
   var map = getMap();
   var payload = '[' + esrijsonFormat.writeFeature(feature, {
-    featureProjection: map.getView().getProjection()
+    featureProjection: map.getView().getProjection(),
+    dataProjection: projection
   }) + ']';
 
   for (var s in str) {

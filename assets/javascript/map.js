@@ -2,6 +2,9 @@ var $ = require('jQuery');
 var ol = require('openlayers');
 
 import {
+    createLegend
+} from './legend.js';
+import {
     createMapserverLayer
 } from './mapservice.js';
 import {
@@ -21,6 +24,7 @@ var map = ol.map;
 var mapserverLayersArray = [];
 var featureserverLayersArray = [];
 
+
 var raster = new ol.layer.Tile({
   source: new ol.source.XYZ({
     attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
@@ -34,9 +38,6 @@ export function createMap() {
   map = new ol.Map({
     layers: [
       raster
-      // new ol.layer.Tile({
-      //   source: new ol.source.OSM()
-      // })
     ],
     target: 'map',
     view: new ol.View({
@@ -74,6 +75,7 @@ export function getMap() {
   return map;
 }
 
+
 //Fill the javascript variable @capabilities with JSON
 function getCapabilities(url) {
   var capabilitiesURL = url + '?f=pjson';
@@ -90,16 +92,31 @@ function getCapabilities(url) {
 
 //Fill the javascript variable @legend with JSON
 function getLegend(url) {
-  var legendURL = url + '/legend?f=pjson';
-  $.ajax({
-    type: 'GET',
-    url: legendURL,
-    async: false,
-    dataType: 'json',
-    success: function(data) {
-      legend = data;
-    }
-  });
+  if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
+    var mapLegendURL = url + '/legend?f=pjson';
+    $.ajax({
+      type: 'GET',
+      url: mapLegendURL,
+      async: false,
+      dataType: 'json',
+      success: function(data) {
+        legend = data;
+      }
+    });
+    createLegend(legend, 'wms');
+  }  else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
+    var featureLegendURL = url + '/layers?f=pjson';
+    $.ajax({
+      type: 'GET',
+      url: featureLegendURL,
+      async: false,
+      dataType: 'json',
+      success: function(data) {
+        legend = data;
+      }
+    });
+    createLegend(legend, 'wfs');
+  }
 }
 
 function fillMenu() {

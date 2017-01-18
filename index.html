@@ -8,7 +8,18 @@
 </head>
 
 <body>
+    <div id="popUpLegend" style="z-index:1; position:absolute; left:5%; top:5%; width:25%; margin:auto; display:none; background-color:#4b7ac6;">
+      <span style="position:inherit; right:0; top:0;">
+        <button type="button" id="buttonLegendClose">Sluiten</button>
+      </span>
+      <h3 style="padding:5px;">Legenda</h3>
+      <p id="legendInfo" style="padding:5px;">
+      </p>
+    </div>
     <div id="popUpFilter" style="z-index:1; position:absolute; left:0; right:0; bottom:0; top:0; width:40%; height:50%; margin:auto; display:none; background-color:#4b7ac6;">
+      <span style="position:inherit; right:0; top:0;">
+        <button type="button" id="buttonFilterClose">Sluiten</button>
+      </span>
         <h3>Filters</h3>
         <form>
             <label for="numberLayer">Selecteer laag:</label><br />
@@ -30,6 +41,9 @@
 
     </div>
     <div id="popUpSearch" style="z-index:1; position:absolute; left:0; right:0; bottom:0; top:0; width:40%; height:50%; margin:auto; display:none; background-color:#4b7ac6;">
+      <span style="position:inherit; right:0; top:0;">
+        <button type="button" id="buttonSearchClose">Sluiten</button>
+      </span>
         <h3>Zoeken</h3>
         <form>
 
@@ -96,19 +110,20 @@
                             <h3 style="padding-top:10px;">Features</h3>
 
                             <form>
-                                <label for="numberLayer">Selecteer laag:</label><br />
+                                <!-- <label for="numberLayer">Selecteer laag:</label><br />
                                 <select name="layerSelect" id="layerSelect">
-                                </select>
-                                <label for="addFeature"><input type="radio" id="addFeature" value="add"> Feature toevoegen</label><br />
-                                <label for="selectFeature"><input type="radio" id="selectFeature" value="select"> Feature selecteren</label><br />
-                                <label for="changeFeature"><input type="radio" id="changeFeature" value="change"> Feature bewerken</label><br />
-                                <label for="deleteFeature"><input type="radio" id="deleteFeature" value="delete"> Feature verwijderen</label><br />
+                                </select> -->
+                                <label for="addFeature"><input type="radio" name="features" id="addFeature" value="add"> Feature toevoegen</label><br />
+                                <label for="selectFeature"><input type="radio" name="features" id="selectFeature" value="select"> Feature selecteren</label><br />
+                                <label for="changeFeature"><input type="radio" name="features" id="changeFeature" value="change"> Feature bewerken</label><br />
+                                <label for="deleteFeature"><input type="radio" name="features" id="deleteFeature" value="delete"> Feature verwijderen</label><br />
                                 <br />
                                 <br />
                                 <br />
                                 <br />
                                 <button type="button" value='hide/show' id="buttonSearch">Zoeken</button>
-                                <button type="button" id="buttonFilters">Filters</button>
+                                <button type="button" value='hide/show' id="buttonFilter">Filters</button>
+                                <button type="button" value='hide/show' id="buttonLegend">Legenda</button>
                             </form>
                         </div>
                     </div>

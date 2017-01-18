@@ -29,13 +29,24 @@ window.onload = function() {
       }
     });
   });
-
-    //Eventlistener going off clicking "Filters" button, will show filters window
-  document.getElementById('buttonFilters').addEventListener('click', function() {
+  //Eventlistener going off clicking "Legend" button, will show filters window
+  document.getElementById('buttonLegend').addEventListener('click', function() {
+    showWindow('legend');
+  });
+  //Eventlistener going off clicking "LegendClose" button, will show filters window
+  document.getElementById('buttonLegendClose').addEventListener('click', function() {
+    showWindow('legendClose');
+  });
+  //Eventlistener going off clicking "Filters" button, will show filters window
+  document.getElementById('buttonFilter').addEventListener('click', function() {
     showWindow('filter');
   });
+  //Eventlistener going off clicking "Filters" button, will show filters window
+  document.getElementById('buttonFilterClose').addEventListener('click', function() {
+    showWindow('filterClose');
+  });
 
-    //Eventlistener going off when the user changes layers at filters window, which will trigger an event to get the features of the chosen layer
+  //Eventlistener going off when the user changes layers at filters window, which will trigger an event to get the features of the chosen layer
   document.getElementById('filterLayerSelect').addEventListener('change',function() {
     var temp = document.getElementById('filterLayerSelect').options;
     $(temp).each(function(index, element) {
@@ -46,7 +57,7 @@ window.onload = function() {
     });
   });
 
-    //Eventlistener going off clicking "Filters" button, will show filters window
+  //Eventlistener going off clicking "Filters" button, will show filters window
   document.getElementById('buttonFilterApply').addEventListener('click', function() {
     if (document.getElementById('serviceURL').value.toLowerCase().indexOf('mapserver') >= 0) {
       filterWMS(document.getElementById('filterLayerSelect').value,document.getElementById('featureNameSelect').value,document.getElementById('operatorSelect1').value,document.getElementById('checkWaarde1').value);
@@ -55,9 +66,13 @@ window.onload = function() {
     }
   });
 
-    //Eventlistener going off clicking "Zoeken" button, will show Zoeken window
+  //Eventlistener going off clicking "Zoeken" button, will show Zoeken window
   document.getElementById('buttonSearch').addEventListener('click', function() {
     showWindow('search');
+  });
+  //Eventlistener going off clicking "ZoekenClose" button, will show Zoeken window
+  document.getElementById('buttonSearchClose').addEventListener('click', function() {
+    showWindow('searchClose');
   });
 
 };
