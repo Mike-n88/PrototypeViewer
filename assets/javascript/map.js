@@ -8,7 +8,7 @@ import {
     createFeatureLayer
 } from './featureservice.js';
 
-import {changeFeature} from './featureservice.js';
+//import {changeFeature} from './featureservice.js';
 //import {onClickWMS} from './mapservice.js';
 import {onClickWFS} from './featureservice.js';
 
@@ -21,13 +21,22 @@ var map = ol.map;
 var mapserverLayersArray = [];
 var featureserverLayersArray = [];
 
+var raster = new ol.layer.Tile({
+  source: new ol.source.XYZ({
+    attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+        'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
+        'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+  })
+});
 //create a basic map
 export function createMap() {
   map = new ol.Map({
     layers: [
-      new ol.layer.Tile({
-        source: new ol.source.OSM()
-      })
+      raster
+      // new ol.layer.Tile({
+      //   source: new ol.source.OSM()
+      // })
     ],
     target: 'map',
     view: new ol.View({
@@ -162,10 +171,11 @@ export function hideLayer(layerId) {
 // from each feature under the mouse and display it
 function onMouseClick(browserEvent) {
   var evt = browserEvent;
+  //if(){
   if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
-    //onClickWMS(evt);
+      //onClickWMS(evt);
   }  else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
     onClickWFS(evt);
   }
-
+  //}
 }

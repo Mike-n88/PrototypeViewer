@@ -1,22 +1,28 @@
 var $ = require('jQuery');
 var ol = require('openlayers');
+var proj4 = require('proj4');
+
+proj4.defs('EPSG:28992', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.4171,50.3319,465.5524,-0.398957388243134,0.343987817378283,-1.87740163998045,4.0725 +units=m +no_defs');
 
 import {
     getMap
 } from './map.js';
+import {
+    getUrl
+} from './map.js';
 
 var esrijsonFormat = new ol.format.EsriJSON();
 
-export function createFeatureLayer(serviceUrl, layer) {
+export function createFeatureLayer(dataSource, layer) {
   var vectorSource = new ol.source.Vector({
     loader: function(extent, resolution, projection) {
-      var url = serviceUrl + '/' + layer + '/query/?f=json&' +
+      var url = dataSource + '/' + layer + '/query/?f=json&' +
                 'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' +
                 encodeURIComponent('{"xmin":' + extent[0] + ',"ymin":' +
                     extent[1] + ',"xmax":' + extent[2] + ',"ymax":' + extent[3] +
-                    ',"spatialReference":{"wkid":102100}}') +
-                '&geometryType=esriGeometryEnvelope&inSR=102100&outFields=*' +
-                '&outSR=102100';
+                    ',"spatialReference":{"wkid":28992}}') +
+                '&geometryType=esriGeometryEnvelope&inSR=28992&outFields=*' +
+                '&outSR=28992';
       $.ajax({
         url: url,
         dataType: 'jsonp',
@@ -47,48 +53,104 @@ export function createFeatureLayer(serviceUrl, layer) {
   return vector;
 }
 
-export function changeFeature(feature) {
+export function changeFeatureInfo(feature) {
   var str = {};
   str = feature.getProperties();
+  var dataSource = getUrl();
+  var url = dataSource + '/0/updateFeatures';
+  var map = getMap();
+  var payload = '[' + esrijsonFormat.writeFeature(feature, {
+    featureProjection: map.getView().getProjection()
+  }) + ']';
 
   for (var s in str) {
     if (typeof str[s] != 'object' || str[s] === 'geometry') {
       str[s] = document.getElementById('' + s + '1').value;
-      feature[s] = document.getElementById('' + s + '1').value;
     }
   }
 
-  $.ajax({
-    type: 'POST',
-    url: 'http://192.168.216.56:6080/arcgis/rest/services/test/MyMapService/FeatureServer/0/applyEdits',
-    data: str,
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    processData: true,
-    success: function(data, status, jqXHR) {
-      alert('success...' + data);
-    },
-    error: function(xhr) {
-      alert(xhr.responseText);
+  $.post(url, {
+    f: 'json',
+    features: payload
+  }).done(function(data) {
+    var result = JSON.parse(data);
+    if (result.updateResults && result.updateResults.length > 0) {
+      if (result.updateResults[0].success === true) {
+        feature.setProperties({
+          'relcp86d_': str.relcp86d_,
+          'relcp86d_i': str.relcp86d_i,
+          'symbol': str.symbol,
+          'polygonid': str.polygonid,
+          'scale': str.scale,
+          'angle': str.angle,
+          'omschrijvi': str.omschrijvi
+        });
+
+      } else {
+        var error = result.addResults[0].error;
+        alert(error.description + ' (' + error.code + ')');
+      }
+
     }
   });
 }
 
+// Edit feature info directly without openlayers
+// export function changeFeature(feature) {
+//   var str = {};
+//   str = feature.getProperties();
+//   var dataSource = getUrl();
+//   var url = dataSource + '/0/updateFeatures?f=json';
+//
+//   for (var s in str) {
+//     if (typeof str[s] != 'object' || str[s] === 'geometry') {
+//       str[s] = document.getElementById('' + s + '1').value;
+//       feature[s] = document.getElementById('' + s + '1').value;
+//     }
+//   }
+//
+// var jsonTemp = {
+//   'attributes' : {
+//     'objectid' : str.objectid,
+//     'relcp86d_' : str.relcp86d_,
+//     'relcp86d_i' : str.relcp86d_i,
+//     'symbol' : str.symbol,
+//     'polygonid' : str.polygonid,
+//     'scale' : str.scale,
+//     'angle' : str.angle,
+//     'omschrijvi' : str.omschrijvi
+//   },
+//   'geometry' : {
+//     'x' : str.geometry.flatCoordinates[0],
+//     'y' : str.geometry.flatCoordinates[1]
+//   }
+// };
 
-//     $.ajax({
-//       type: "POST",
-//       url: "http://192.168.216.56:6080/arcgis/rest/services/test/MyMapService/FeatureServer/0/applyEdits",
-//       data: str,
-//       dataType: "JSON",
-//       success: function() {
-//         alert("Thanks");
-//       }
+//   jsonTemp = JSON.parse(JSON.stringify(jsonTemp));
+//   console.log('jsonTemp: ', jsonTemp);
+//
+//   $.ajax({
+//     url: url,
+//     type: 'POST',
+//     data: jsonTemp,
+//     dataType: 'json',
+//     success: function(result) {
+//
+//       console.log(result);
+//
+//     },
+//     error: function(xhr, ajaxOptions, thrownError) {
+//       alert(xhr.status);
+//       alert(thrownError);
+//     }
 //   });
 //
-//}
+//
+// }
+
 
 //Onclick behavior
-export function onClickWFS(browserEvent){
+export function onClickWFS(browserEvent) {
   var map = getMap();
   var coordinate = browserEvent.coordinate;
   var pixel = map.getPixelFromCoordinate(coordinate);
@@ -102,7 +164,7 @@ export function onClickWFS(browserEvent){
     $('#info-feature form').append('<br><button type="button" id="saveButton">Save</button><br />');
 
     document.getElementById('saveButton').addEventListener('click', function() {
-      changeFeature(feature);
+      changeFeatureInfo(feature);
     });
 
     var str = feature.getProperties();

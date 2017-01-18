@@ -44,7 +44,18 @@
                     <label for="serviceURL">Databron (service)</label>
                 </div>
                 <div class="col-md-7">
-                    <input type="text" style="right:0px; width:100%;" name="serviceURL" id="serviceURL" value="">
+                    <input type="text" style="right:0px; width:100%;" list="dataSourceList" name="serviceURL" id="serviceURL" value="">
+                    <datalist id="dataSourceList">
+                      <option value="http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer">Petroleum 10.05 (Feature)</option>
+                      <option value="http://ags101.prvgld.nl/arcgis/rest/services/IBIS_bedrijventerrein_app/IBIS_bedrijventerrein_app/MapServer">Bedrijventerrein 10.11 (Map)</option>
+                      <option value="http://ags101.prvgld.nl/arcgis/rest/services/BOW/Mutatiemeldingen_Test/FeatureServer">Mutatie meldingen 10.11 (Feature)</option>
+                      <option value="http://ags101.prvgld.nl/arcgis/rest/services/BOW/Mutatiemeldingen_Test/MapServer">Mutatie meldingen 10.11 (Map)</option>
+                      <option value="http://192.168.216.56:6080/arcgis/rest/services/test/gelderland/FeatureServer">Eigen Server 10.31 (Feature)</option>
+                      <option value="http://192.168.216.56:6080/arcgis/rest/services/test/gelderland/MapServer">Eigen Server 10.31 (Map)</option>
+                      <option value="http://services.arcgis.com/rOo16HdIMeOBI4Mb/ArcGIS/rest/services/Meteors/FeatureServer">Meteorieten 10.41 (Feature)</option>
+                      <option value="http://services.arcgis.com/rOo16HdIMeOBI4Mb/ArcGIS/rest/services/universities-2/FeatureServer">Universiteiten USA 10.41 (Feature)</option>
+                      <option value="http://services.arcgis.com/rOo16HdIMeOBI4Mb/ArcGIS/rest/services/Comp_Plan_BPS_150319.gdb/FeatureServer">iets 10.41 (Feature)</option>
+                    </datalist>
                 </div>
                 <div class="col-md-2">
                     <button type="button" id="buttonConnect">Koppel</button>

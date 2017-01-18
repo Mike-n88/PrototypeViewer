@@ -3,11 +3,9 @@ import {
     getFLayersA
 } from './map.js';
 
-
 export function filterWFS(layerId, featureName1, operatorName1, checkWaarde1) {
 
   var featureLayersArray = getFLayersA();
-
 
     // featureservice filter
   var vectorSource = featureLayersArray[layerId].getSource();
