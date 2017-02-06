@@ -10,11 +10,16 @@ import {
 import {
     getUrl
 } from './map.js';
+import {
+    getFLayersA
+} from './map.js';
 
 var esrijsonFormat = new ol.format.EsriJSON();
 var projection = new ol.proj.Projection({
   code: 'EPSG:28992'
 });
+
+// Function to create a feature layer
 export function createFeatureLayer(dataSource, layer) {
   var vectorSource = new ol.source.Vector({
     loader: function(extent, resolution, projection) {
@@ -60,22 +65,24 @@ export function createFeatureLayer(dataSource, layer) {
 
 }
 
-export function changeFeatureInfo(feature) {
+// Function to change the feature information
+export function changeFeatureInfo(feature, payload) {
   var str = {};
   str = feature.getProperties();
   var dataSource = getUrl();
   var url = dataSource + '/0/updateFeatures';
-  var map = getMap();
-  var payload = '[' + esrijsonFormat.writeFeature(feature, {
-    featureProjection: map.getView().getProjection(),
-    dataProjection: projection
-  }) + ']';
+  var changes = {};
+
 
   for (var s in str) {
     if (typeof str[s] != 'object' || str[s] === 'geometry') {
       str[s] = document.getElementById('' + s + '1').value;
+      changes[s] = document.getElementById('' + s + '1').value;
     }
   }
+
+  changes = JSON.stringify(changes);
+
 
   $.post(url, {
     f: 'json',
@@ -103,76 +110,85 @@ export function changeFeatureInfo(feature) {
   });
 }
 
-// Edit feature info directly without openlayers
-// export function changeFeature(feature) {
-//   var str = {};
-//   str = feature.getProperties();
-//   var dataSource = getUrl();
-//   var url = dataSource + '/0/updateFeatures?f=json';
-//
-//   for (var s in str) {
-//     if (typeof str[s] != 'object' || str[s] === 'geometry') {
-//       str[s] = document.getElementById('' + s + '1').value;
-//       feature[s] = document.getElementById('' + s + '1').value;
-//     }
-//   }
-//
-// var jsonTemp = {
-//   'attributes' : {
-//     'objectid' : str.objectid,
-//     'relcp86d_' : str.relcp86d_,
-//     'relcp86d_i' : str.relcp86d_i,
-//     'symbol' : str.symbol,
-//     'polygonid' : str.polygonid,
-//     'scale' : str.scale,
-//     'angle' : str.angle,
-//     'omschrijvi' : str.omschrijvi
-//   },
-//   'geometry' : {
-//     'x' : str.geometry.flatCoordinates[0],
-//     'y' : str.geometry.flatCoordinates[1]
-//   }
-// };
+// Feature mode checker
+function featureMode(browserEvent, map, pixel, payload, feature, dataSource) {
+  if (document.getElementById('deleteFeature').checked) {
+    deleteFeature(browserEvent, map, payload, feature, dataSource);
+  }  else if (document.getElementById('addFeature').checked) {
+    addFeature(browserEvent);
+  }  else if (document.getElementById('selectFeature').checked) {
+    selectFeature(browserEvent);
+  }  else if (document.getElementById('changeFeature').checked) {
+    changeFeature(browserEvent);
+  }
+}
 
-//   jsonTemp = JSON.parse(JSON.stringify(jsonTemp));
-//   console.log('jsonTemp: ', jsonTemp);
-//
-//   $.ajax({
-//     url: url,
-//     type: 'POST',
-//     data: jsonTemp,
-//     dataType: 'json',
-//     success: function(result) {
-//
-//       console.log(result);
-//
-//     },
-//     error: function(xhr, ajaxOptions, thrownError) {
-//       alert(xhr.status);
-//       alert(thrownError);
-//     }
-//   });
-//
-//
-// }
+function deleteFeature(evt, map, payload, feature, dataSource) {
+  //delete feature
+  var url = dataSource + '/0/deleteFeatures';
+  var featureLayersArray = getFLayersA();
+  var vectorSource = featureLayersArray[0].getSource();
+  var fid = feature.getId();
+  //console.log(feature);
+  var r = confirm('Weet u zeker dat u de feature(s) wil verwijderen?');
+  if (r == true) {
+    vectorSource.removeFeature(feature);
 
+    var jsonTemp = {'objectIds': fid};
+    jsonTemp = JSON.parse(JSON.stringify(jsonTemp));
+
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data: jsonTemp,
+      success: function(data) {
+
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+
+      }
+    });
+  }
+}
+function addFeature() {
+  //add feature
+}
+function selectFeature() {
+  //select feature
+}
+function changeFeature() {
+  //delete feature
+}
 
 //Onclick behavior
 export function onClickWFS(browserEvent) {
   var map = getMap();
+  var dataSource = getUrl();
   var coordinate = browserEvent.coordinate;
   var pixel = map.getPixelFromCoordinate(coordinate);
   var el;
+
   if (document.getElementById('info-feature')) {
     el = document.getElementById('info-feature');
   }
   el.innerHTML = '';
+
+
   map.forEachFeatureAtPixel(pixel, function(feature) {
+    var payload = '[' + esrijsonFormat.writeFeature(feature, {
+      featureProjection: map.getView().getProjection(),
+      dataProjection: projection
+    }) + ']';
+
+    //First check what feature mode is selected
+    featureMode(browserEvent, map, pixel, payload, feature, dataSource);
+
     $('#info-feature').append('<form>');
     $('#info-feature form').append('<br><button type="button" id="saveButton">Save</button><br />');
 
     document.getElementById('saveButton').addEventListener('click', function() {
-      changeFeatureInfo(feature);
+      changeFeatureInfo(feature, payload);
     });
 
     var str = feature.getProperties();

@@ -1,30 +1,22 @@
+// requires
 var $ = require('jQuery');
 var ol = require('openlayers');
 
-import {
-    createLegend
-} from './legend.js';
-import {
-    createMapserverLayer
-} from './mapservice.js';
-import {
-    createFeatureLayer
-} from './featureservice.js';
-
-//import {changeFeature} from './featureservice.js';
-//import {onClickWMS} from './mapservice.js';
+// import functions from other js files
+import {createLegend} from './legend.js';
+import {createMapserverLayer} from './mapservice.js';
+import {createFeatureLayer} from './featureservice.js';
 import {onClickWFS} from './featureservice.js';
+// import {onClickWMS} from './mapservice.js'; // not working
 
+// All variables
 var dataSource;
 var capabilities;
 var legend;
 var layers;
 var map = ol.map;
-
 var mapserverLayersArray = [];
 var featureserverLayersArray = [];
-
-
 var raster = new ol.layer.Tile({
   source: new ol.source.XYZ({
     attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
@@ -33,6 +25,7 @@ var raster = new ol.layer.Tile({
         'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
   })
 });
+
 //create a basic map
 export function createMap() {
   map = new ol.Map({
@@ -52,29 +45,28 @@ export function createMap() {
 //After collecting the data start fillMenu() with the collected data
 export function getDataSource(url) {
   dataSource = url;
-    //Todo onderstaande verwerken in 1 functie om de hoeveelheid code te verminderen
   getCapabilities(dataSource);
   getLegend(dataSource);
     //Fill in menu with information from the dataSource
   fillMenu();
 }
 
+// getter for the dataSource (url)
 export function getUrl() {
   return dataSource;
 }
-
+// getter for the mapserverLayersArray
 export function getMLayersA() {
   return mapserverLayersArray;
 }
-
+// getter for the featureserverLayersArray
 export function getFLayersA() {
   return featureserverLayersArray;
 }
-
+// getter for the map
 export function getMap() {
   return map;
 }
-
 
 //Fill the javascript variable @capabilities with JSON
 function getCapabilities(url) {
@@ -119,6 +111,7 @@ function getLegend(url) {
   }
 }
 
+//fill the menu and then add the layers to the map
 function fillMenu() {
   getLayersFromDataSource('#setLayer');
   getLayersFromDataSource('#layerSelect');
@@ -126,6 +119,7 @@ function fillMenu() {
   addLayersToMap();
 }
 
+//Get layers from datasource and add them in the in the given div id
 function getLayersFromDataSource(divId) {
   layers = capabilities.layers;
     //remove old options
@@ -138,19 +132,21 @@ function getLayersFromDataSource(divId) {
         .find('option').remove()
         .end();
   }
-    //iterate through all layers and add them to the select list where value is id and name is name
+  //iterate through all layers and add them to the select list where value is id and name is name
   for (var i = 0; i < layers.length; i++) {
     var aname = layers[i].name;
     var aid = layers[i].id;
-        //setLayer.append($('<option />').val(aid));
+
     $(divId).append('<option value="' + aid + '">' + aname + '</option>');
   }
 }
 
+//add a single layer to the map
 export function addSingleLayerToMap(layer) {
   map.addLayer(layer);
 }
 
+//Add all layers to the map
 function addLayersToMap() {
   for (var i = 0; i < layers.length; i++) {
     var aid = layers[i].id;
