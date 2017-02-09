@@ -111,15 +111,19 @@ export function changeFeatureInfo(feature, payload) {
 }
 
 // Feature mode checker
-function featureMode(browserEvent, map, pixel, payload, feature, dataSource) {
-  if (document.getElementById('deleteFeature').checked) {
-    deleteFeature(browserEvent, map, payload, feature, dataSource);
-  }  else if (document.getElementById('addFeature').checked) {
-    addFeature(browserEvent);
-  }  else if (document.getElementById('selectFeature').checked) {
-    selectFeature(browserEvent);
-  }  else if (document.getElementById('changeFeature').checked) {
-    changeFeature(browserEvent);
+function featureMode(boolFeatures, browserEvent, map, pixel, payload, feature, dataSource) {
+  if (boolFeatures === true) {
+    if (document.getElementById('deleteFeature').checked) {
+      deleteFeature(browserEvent, map, payload, feature, dataSource);
+    }    else if (document.getElementById('selectFeature').checked) {
+      selectFeature(browserEvent);
+    }  else if (document.getElementById('changeFeature').checked) {
+      changeFeature(browserEvent);
+    }
+  }  else if (boolFeatures === false) {
+    if (document.getElementById('addFeature').checked) {
+      addFeature(browserEvent, dataSource);
+    }
   }
 }
 
@@ -130,7 +134,7 @@ function deleteFeature(evt, map, payload, feature, dataSource) {
   var vectorSource = featureLayersArray[0].getSource();
   var fid = feature.getId();
   //console.log(feature);
-  var r = confirm('Weet u zeker dat u de feature(s) wil verwijderen?');
+  var r = confirm('Weet u zeker dat u de feature met id ' + fid + ' wil verwijderen?');
   if (r == true) {
     vectorSource.removeFeature(feature);
 
@@ -151,8 +155,47 @@ function deleteFeature(evt, map, payload, feature, dataSource) {
     });
   }
 }
-function addFeature() {
+
+function addFeature(browserEvent, dataSource) {
   //add feature
+  var url = dataSource + '/0/addFeatures';
+
+  var coordinate = proj4('EPSG:3857','EPSG:28992',browserEvent.coordinate);
+  var x = coordinate[0];
+  var y = coordinate[1];
+  //console.log('De locatie is ' + coordinate);
+
+  var jsonTemp = [{
+    'geometry': {
+      'x': x,
+      'y': y
+    },
+    'attributes': {
+      'relcp86d_': 0,
+      'relcp86d_i': 99999,
+      'symbol': 77,
+      'polygonid': 1,
+      'scale': 1,
+      'angle': 10,
+      'omschrijvi': 'Testobject'
+    }
+  }];
+
+  var jsonTempStringified = JSON.stringify(jsonTemp);
+
+  $.ajax({
+    url: url,
+    dataType: 'json',
+    type: 'POST',
+    data: 'f=json&features=' + jsonTempStringified,
+    success: function(data) {
+
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+
+      //console.warn(ajaxOptions);
+    }
+  });
 }
 function selectFeature() {
   //select feature
@@ -167,6 +210,8 @@ export function onClickWFS(browserEvent) {
   var dataSource = getUrl();
   var coordinate = browserEvent.coordinate;
   var pixel = map.getPixelFromCoordinate(coordinate);
+  var featureLayersArray = getFLayersA();
+  var vectorSource = featureLayersArray[0].getSource();
   var el;
 
   if (document.getElementById('info-feature')) {
@@ -174,15 +219,18 @@ export function onClickWFS(browserEvent) {
   }
   el.innerHTML = '';
 
-
+  //First check if the user wants to add a feature this has to be done before the map.forEachFeatureAtPixel function
+  //because the user would click in an empty area on the map with no features
+  featureMode(false, browserEvent, map, pixel, 'payload not available', 'feature not available', dataSource);
+  vectorSource.refresh();
   map.forEachFeatureAtPixel(pixel, function(feature) {
     var payload = '[' + esrijsonFormat.writeFeature(feature, {
       featureProjection: map.getView().getProjection(),
       dataProjection: projection
     }) + ']';
 
-    //First check what feature mode is selected
-    featureMode(browserEvent, map, pixel, payload, feature, dataSource);
+    //Second check what feature mode is selected giving the extra possible parameters and the boolFeatures true
+    featureMode(true, browserEvent, map, pixel, payload, feature, dataSource);
 
     $('#info-feature').append('<form>');
     $('#info-feature form').append('<br><button type="button" id="saveButton">Save</button><br />');
