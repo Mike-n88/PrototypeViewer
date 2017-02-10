@@ -68,6 +68,17 @@ export function getMap() {
   return map;
 }
 
+export function getLayerId() {
+  var layerId = [];
+  var temp = document.getElementById('setLayer').options;
+  $(temp).each(function(index, element) {
+    if (temp[index].selected == true) {
+      layerId.push(index);
+    }
+  });
+  return layerId;
+}
+
 //Fill the javascript variable @capabilities with JSON
 function getCapabilities(url) {
   var capabilitiesURL = url + '?f=pjson';
