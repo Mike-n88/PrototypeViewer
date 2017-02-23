@@ -7,7 +7,7 @@ import {createLegend} from './legend.js';
 import {createMapserverLayer} from './mapservice.js';
 import {createFeatureLayer} from './featureservice.js';
 import {onClickWFS} from './featureservice.js';
-// import {onClickWMS} from './mapservice.js'; // not working
+import {onClickWMS} from './mapservice.js'; // not working
 
 // All variables
 var dataSource;
@@ -15,6 +15,7 @@ var capabilities;
 var legend;
 var layers;
 var map = ol.map;
+var dirty = {};
 var mapserverLayersArray = [];
 var featureserverLayersArray = [];
 var raster = new ol.layer.Tile({
@@ -26,9 +27,22 @@ var raster = new ol.layer.Tile({
   })
 });
 
-//create a basic map
+// setting up the select interaction variables
+var selectInteraction = new ol.interaction.Select();
+selectInteraction.setActive(true);
+var selected = selectInteraction.getFeatures();
+
+// setting up the modify interaction variables
+var modifyInteraction = new ol.interaction.Modify({
+  features: selected
+});
+modifyInteraction.setActive(false);
+
+// create a basic map
 export function createMap() {
   map = new ol.Map({
+    // add the interaction variables to the map
+    interactions: ol.interaction.defaults().extend([selectInteraction, modifyInteraction]),
     layers: [
       raster
     ],
@@ -38,9 +52,18 @@ export function createMap() {
       zoom: 10
     })
   });
-    //map.on('pointermove', onMouseMove);
+    // map.on('pointermove', onMouseMove);
   map.on('click', onMouseClick);
 }
+
+// actual function to change feature geometry
+selected.on('add', function(evt) {
+  var feature = evt.element;
+  feature.on('change', function(evt) {
+    dirty[evt.target.getId()] = true;
+  });
+});
+
 //Get data from the serviceURL as JSON format
 //After collecting the data start fillMenu() with the collected data
 export function getDataSource(url) {
@@ -195,11 +218,18 @@ export function hideLayer(layerId) {
 // from each feature under the mouse and display it
 function onMouseClick(browserEvent) {
   var evt = browserEvent;
-  //if(){
-  if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
-      //onClickWMS(evt);
-  }  else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
-    onClickWFS(evt);
+  if (document.getElementById('changeFeature').checked) {
+    // set the select and modify interaction active
+    //selectInteraction.setActive(true);
+    modifyInteraction.setActive(true);
+  }  else {
+    // set the select and modify interaction inactive
+    //selectInteraction.setActive(false);
+    modifyInteraction.setActive(false);
+    if (dataSource.toLowerCase().indexOf('mapserver') >= 0) {
+      onClickWMS(evt);
+    }  else if (dataSource.toLowerCase().indexOf('featureserver') >= 0) {
+      onClickWFS(evt);
+    }
   }
-  //}
 }

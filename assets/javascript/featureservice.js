@@ -22,6 +22,7 @@ var projection = new ol.proj.Projection({
   code: 'EPSG:28992'
 });
 
+
 // Function to create a feature layer
 export function createFeatureLayer(dataSource, layer) {
   var vectorSource = new ol.source.Vector({
@@ -60,7 +61,6 @@ export function createFeatureLayer(dataSource, layer) {
       tileSize: 512
     }))
   });
-
   var vector = new ol.layer.Vector({
     source: vectorSource
   });
@@ -106,9 +106,7 @@ export function changeFeatureInfo(feature, layerId, map) {
         changes[s] = document.getElementById('' + s + '1').value;
       }
     }
-
     //changes = JSON.stringify(changes);
-
     $.post(url, {
       f: 'json',
       features: payload
@@ -218,11 +216,13 @@ function addFeature(browserEvent, dataSource, map, vectorSource, layerId) {
     }
   }
 }
+
 function selectFeature() {
   //select feature
 }
+
 function changeFeature() {
-  //delete feature
+
 }
 
 
