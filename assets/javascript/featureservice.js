@@ -74,10 +74,6 @@ function featureMode(boolFeatures, browserEvent, map, pixel, feature, dataSource
   if (boolFeatures === true) {
     if (document.getElementById('deleteFeature').checked) {
       deleteFeature(browserEvent, map, feature, dataSource, vectorSource, layerId);
-    }    else if (document.getElementById('selectFeature').checked) {
-      selectFeature(browserEvent);
-    }  else if (document.getElementById('changeFeature').checked) {
-      changeFeature(browserEvent);
     }
   }  else if (boolFeatures === false) {
     if (document.getElementById('addFeature').checked) {
@@ -101,7 +97,7 @@ export function changeFeatureInfo(feature, layerId, map) {
     }) + ']';
 
     for (var s in str) {
-      if (typeof str[s] != 'object' && s != 'objectid' && s != 'objectid') {
+      if (typeof str[s] != 'object' && s != 'objectid') {
         str[s] = document.getElementById('' + s + '1').value;
         changes[s] = document.getElementById('' + s + '1').value;
       }
@@ -217,15 +213,6 @@ function addFeature(browserEvent, dataSource, map, vectorSource, layerId) {
   }
 }
 
-function selectFeature() {
-  //select feature
-}
-
-function changeFeature() {
-
-}
-
-
 //Onclick behavior
 export function onClickWFS(browserEvent) {
   var map = getMap();
@@ -235,12 +222,14 @@ export function onClickWFS(browserEvent) {
   var featureLayersArray = getFLayersA();
   var layerId = getLayerId();
   var vectorSource = featureLayersArray[layerId[0]].getSource();
-  var el;
-
+  var textInfoFeature;
+  var headerInfoFeature;
   if (document.getElementById('info-feature')) {
-    el = document.getElementById('info-feature');
+    textInfoFeature = document.getElementById('info-feature');
+    headerInfoFeature = document.getElementById('info-header');
   }
-  el.innerHTML = '';
+  textInfoFeature.innerHTML = '';
+  headerInfoFeature.innerHTML = 'Feature informatie';
 
   //First check if the user wants to add a feature this has to be done before the map.forEachFeatureAtPixel function
   //because the user would click in an empty area on the map with no features
@@ -248,13 +237,20 @@ export function onClickWFS(browserEvent) {
   vectorSource.refresh();
   map.forEachFeatureAtPixel(pixel, function(feature) {
 
-
     //Second check what feature mode is selected giving the extra possible parameters and the boolFeatures true
     featureMode(true, browserEvent, map, pixel, feature, dataSource, vectorSource, layerId);
 
-    $('#info-feature').append('<form>');
-    $('#info-feature form').append('<br><button type="button" id="saveButton">Save</button><br />');
 
+    var table = $('<table></table>').addClass('table1');
+    var str = feature.getProperties();
+    for (var s in str) {
+      if (typeof str[s] != 'object' && s != 'objectid') {
+        var row = ('<tr><td><label for="' + s + '">' + s + ': </label></td><td><input type="text" id="' + s + '1" name="' + s + '" value="' + str[s] + '" /></td></tr>');
+        table.append(row);
+      }
+    }
+    $('#info-feature').append(table);
+    $('#info-feature').append('<button type="button" id="saveButton">Save</button><br /> <br />');
     document.getElementById('saveButton').addEventListener('click', function() {
       changeFeatureInfo(feature, layerId, map);
       var r = confirm('Wilt u de feature wijzigen?');
@@ -262,13 +258,5 @@ export function onClickWFS(browserEvent) {
         changeFeatureInfo(feature, layerId, map);
       }
     });
-
-    var str = feature.getProperties();
-    for (var s in str) {
-      if (typeof str[s] != 'object' && s != 'objectid') {
-        $('#info-feature form').append('<label for="' + s + '">' + s + ': </label>');
-        $('#info-feature form').append('<input type="text" id="' + s + '1" name="' + s + '" value="' + str[s] + '" /><br />');
-      }
-    }
   });
 }

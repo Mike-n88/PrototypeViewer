@@ -175,11 +175,6 @@ function getLayersFromDataSource(divId) {
   }
 }
 
-//add a single layer to the map
-export function addSingleLayerToMap(layer) {
-  map.addLayer(layer);
-}
-
 //Add all layers to the map
 function addLayersToMap() {
   for (var i = 0; i < layers.length; i++) {

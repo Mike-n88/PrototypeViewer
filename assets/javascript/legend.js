@@ -4,12 +4,17 @@ export function createLegend(legend,service) {
   if (service === 'wms') {
     $('#legendInfo').append('<table>');
     for (let entry in legend.layers) {
-      var wmsImageData = legend.layers[entry].legend[0].imageData;
-      var wmsLayerName = legend.layers[entry].layerName;
-      $('#legendInfo').append('<tr>');
-      $('#legendInfo').append('<td>' + wmsLayerName + '</td>');
-      $('#legendInfo').append('<td><img src="data:image/png;base64,' + wmsImageData + '" /></td>');
-      $('#legendInfo').append('</tr>');
+      for (let i in legend.layers[entry].legend) {
+        var wmsImageData = legend.layers[entry].legend[i].imageData;
+        var wmsLayerName = legend.layers[entry].legend[i].label;
+        if (wmsLayerName === '') {
+          wmsLayerName = legend.layers[entry].layerName;
+        }
+        $('#legendInfo').append('<tr>');
+        $('#legendInfo').append('<td>' + wmsLayerName + '</td>');
+        $('#legendInfo').append('<td><img src="data:image/png;base64,' + wmsImageData + '" /></td>');
+        $('#legendInfo').append('</tr>');
+      }
     }
     $('#legendInfo').append('</table>');
   }  else if (service === 'wfs') {
